@@ -4,7 +4,8 @@ var path =require('path')
 
 // 使用mongoose连接mongodb
 var mongoose =require('mongoose')
-var db ='mongodb://localhost/imooc-app'
+var db ='mongodb://gougou-runner:1qaz2wsx@localhost:19999/gougouServer'
+// mongodb://blog-runner:1qaz2wsx@localhost:19999/myblog
 mongoose.Promise=require('bluebird')
 mongoose.connect(db);
 
