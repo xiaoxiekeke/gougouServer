@@ -4,10 +4,10 @@ var path =require('path')
 
 // 使用mongoose连接mongodb
 var mongoose =require('mongoose')
-var db ='mongodb://gougou-runner:1qaz2wsx@localhost:19999/gougouServer?authSource=admin'
+var db ='mongodb://gougou-runner:1qaz2wsx@localhost:19999/gougouServer'
 // mongodb://gougou-runner:1qaz2wsx@localhost:19999/gougouServer
 mongoose.Promise=require('bluebird')
-mongoose.connect(db,{auth:{authdb:"admin"}});
+mongoose.connect(db);
 
 //遍历模型文件所在的目录
 var models_path=path.join(__dirname,'/app/models')
