@@ -32,7 +32,7 @@ exports.getQiniuToken=function(body){
 		key+='.mp4'
 		options.scope='gougouvideo:'+key
 		options.persistentOps='avthumb/mp4/an/1'
-		putPolicy=new qiniu.rs.PutPolicy2(options);
+		putPolicy=new qiniu.rs.PutPolicy(options);
 	}else if(type=='audio'){
 		
 	}
