@@ -8,11 +8,10 @@ var robot=require('../service/robot')
 // var uuid=require('uuid')
 
 exports.video=function* (next) {
-	console.log("this is video")
 	var body=this.request.body
 	var videoData=body.video
 	var user=this.session.user
-
+  console.log(videoData)
 	if (!videoData||!videoData.qiniu_key) {
 		this.body={
 			success:false,
@@ -20,7 +19,7 @@ exports.video=function* (next) {
 		}
 		return next
 	};
-
+	console.log("this is video")
 	var video=yield Video.findOne({
 		qiniu_key:videoData.qiniu_key
 	}).exec()
