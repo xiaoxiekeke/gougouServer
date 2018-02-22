@@ -8,6 +8,7 @@ var robot=require('../service/robot')
 // var uuid=require('uuid')
 
 exports.video=function* (next) {
+	console.log("this is video")
 	var body=this.request.body
 	var videoData=body.video
 	var user=this.session.user
