@@ -23,6 +23,8 @@ exports.video=function* (next) {
 	var video=yield Video.findOne({
 		qiniu_key:videoData.qiniu_key
 	}).exec()
+	console.log("video1:")
+	console.log(video)
 
 	if (!video) {
 		// 如果没有视频记录的话，则先保存视频
@@ -32,6 +34,8 @@ exports.video=function* (next) {
 			persistentId:videoData.persistentId
 		})
 		video=yield video.save()
+		console.log("video2:")
+		console.log(video)
 	};
 
 	// 需要将该视频的静音文件异步上传到cloudinary平台
