@@ -12,7 +12,7 @@ exports.video=function* (next) {
 	var videoData=body.video
 	var user=this.session.user
   console.log(videoData)
-	if (!videoData||!videoData.qiniu_key) {
+	if (!videoData||!videoData.qiniu) {
 		this.body={
 			success:false,
 			err:'视频没有上传成功'
