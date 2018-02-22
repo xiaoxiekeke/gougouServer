@@ -12,7 +12,7 @@ exports.video=function* (next) {
 	var videoData=body.video
 	var user=this.session.user
   console.log(videoData)
-	if (!videoData||!videoData.qiniu) {
+	if (!videoData||!videoData.key) {
 		this.body={
 			success:false,
 			err:'视频没有上传成功'
@@ -21,7 +21,7 @@ exports.video=function* (next) {
 	};
 	console.log("this is video")
 	var video=yield Video.findOne({
-		qiniu_key:videoData.qiniu_key
+		qiniu_key:videoData.key
 	}).exec()
 	console.log("video1:")
 	console.log(video)
@@ -30,7 +30,7 @@ exports.video=function* (next) {
 		// 如果没有视频记录的话，则先保存视频
 		video=new Video({
 			author:user._id,
-			qiniu_key:videoData.qiniu_key,
+			qiniu_key:videoData.key,
 			persistentId:videoData.persistentId
 		})
 		video=yield video.save()
