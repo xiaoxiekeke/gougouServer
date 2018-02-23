@@ -1,10 +1,13 @@
 'use strict'
 
 var qiniu = require('qiniu')
+var cloudinary = require('cloudinary')
 var config=require('../../config/config')
-
+var Promise=require('bluebird')
 var sha1=require('sha1')
 var uuid=require('uuid')
+
+cloudinary.config(config.cloudinary)
 
 //需要填写你的 Access Key 和 Secret Key
 qiniu.conf.ACCESS_KEY = config.qiniu.AK;
@@ -63,5 +66,20 @@ exports.getCloudinaryToken=function(body){
 	var signature = 'folder=' + folder + '&tags=' + tags + '&timestamp=' + timestamp + config.cloudinary.api_secret
   signature = sha1(signature)
   return signature;
+}
+
+exports.uploadToCloudinary=function(url){
+	return new Promise(function(resolve,reject){
+		cloudinary.uploader.upload(url,function(result){
+			if (result&&result.public_id) {
+				resolve(result)	
+			}else{
+				reject(result)
+			}
+		},{
+			resource_type:'video',
+			folder:'video'
+		})
+	})
 }
 

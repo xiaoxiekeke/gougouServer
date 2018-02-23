@@ -11,7 +11,6 @@ exports.video=function* (next) {
 	var body=this.request.body
 	var videoData=body.video
 	var user=this.session.user
-  console.log(videoData)
 	if (!videoData||!videoData.key) {
 		this.body={
 			success:false,
@@ -19,12 +18,10 @@ exports.video=function* (next) {
 		}
 		return next
 	};
-	console.log("this is video")
+
 	var video=yield Video.findOne({
 		qiniu_key:videoData.key
 	}).exec()
-	console.log("video1:")
-	console.log(video)
 
 	if (!video) {
 		// 如果没有视频记录的话，则先保存视频
@@ -34,12 +31,20 @@ exports.video=function* (next) {
 			persistentId:videoData.persistentId
 		})
 		video=yield video.save()
-		console.log("video2:")
-		console.log(video)
 	};
 
 	// 需要将该视频的静音文件异步上传到cloudinary平台
-	// var url=config.qiniu.video+video.qiniu_key
+	var url=config.qiniu.video+video.qiniu_key
+	console.log("the url is:"+url)
+	robot.uploadToCloudinary(url)
+			 .then(function(data){
+			 	if(data&&data.public_id){
+			 		video.public_id=data.public_id
+			 		video.detail=data
+			 		video.save()
+			 	}
+			 })
+
 
 	this.body={
 		//将视频的id即视频的地址返还给前端
