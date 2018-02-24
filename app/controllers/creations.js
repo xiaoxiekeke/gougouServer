@@ -2,6 +2,7 @@
 var mongoose=require('mongoose')
 var User=mongoose.model('User')
 var Video=mongoose.model('Video')
+var Audio=mongoose.model('Audio')
 // var sha1=require('sha1')
 var config=require('../../config/config')
 var robot=require('../service/robot')
@@ -50,6 +51,51 @@ exports.video=function* (next) {
 		//将视频的id即视频的地址返还给前端
 		success:true,
 		data:video._id
+	}
+
+
+}
+
+exports.audio=function* (next) {
+	var body=this.request.body
+	var audioData=body.audio
+	var videoId=body.videoId
+	var user=this.session.user
+	if (!audioData||!audioData.public_id) {
+		this.body={
+			success:false,
+			err:'音频没有上传成功'
+		}
+		return next
+	};
+
+	var audio=yield Audio.findOne({
+		public_id:audioData.public_id
+	}).exec()
+
+	var video=yield Video.findOne({
+		_id:videoId
+	}).exec()
+
+	if (!audio) {
+		// 如果没有音频记录的话，则先保存音频
+		var _audio={
+			author:user._id,
+			public_id:audioData.public_id,
+			detail:audioData
+		}
+		if (video) {
+			_audio.video=video._id
+		}
+
+		audio=new Audio(_audio)
+		audio=yield audio.save()
+	};
+
+	this.body={
+		//将音频的id即音频的地址返还给前端
+		success:true,
+		data:audio._id
 	}
 
 

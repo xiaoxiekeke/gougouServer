@@ -13,5 +13,6 @@ module.exports=function(){
   router.post('/signature',App.hasBody,App.hasToken,App.signature)
 
   router.post('/creations/video',App.hasBody,App.hasToken,Creation.video)
+  router.post('/creations/audio',App.hasBody,App.hasToken,Creation.audio)
   return router
 }
