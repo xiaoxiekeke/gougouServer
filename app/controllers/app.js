@@ -9,22 +9,16 @@ var uuid=require('uuid')
 exports.signature=function* (next) {
 	var body=this.request.body
 	var cloud=body.cloud
-	var key
-	var token
+	var data
 	if(cloud==='qiniu'){//七牛	
-		var data=	robot.getQiniuToken(body)
-		token=data.token
-		key=data.key
+		data=	robot.getQiniuToken(body)
 	}else{//Cloudinary
-		token=robot.getCloudinaryToken(body)
+		data=robot.getCloudinaryToken(body)
 	}
 
   this.body={
     success:true,
-    data:{
-    	token:token,
-    	key:key
-    }
+    data:data
   }
 }
 

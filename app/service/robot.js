@@ -64,8 +64,12 @@ exports.getCloudinaryToken=function(body){
 	}
 
 	var signature = 'folder=' + folder + '&tags=' + tags + '&timestamp=' + timestamp + config.cloudinary.api_secret
+  var key=uuid.v4()
   signature = sha1(signature)
-  return signature;
+  return {
+  	token:signature,
+  	key:key
+  };
 }
 
 exports.uploadToCloudinary=function(url){
