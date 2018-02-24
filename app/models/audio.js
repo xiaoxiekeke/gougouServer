@@ -14,7 +14,7 @@ var AudioSchema = new Schema({
   video:{
     type: ObjectId,
     ref: 'Video'
-  }
+  },
 
   public_id: String,
   detail: Mixed,
