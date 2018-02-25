@@ -248,7 +248,7 @@ exports.save=function* (next){
 				nickname:user.nickname,
 				gender:user.gender,
 				breed:user.breed,
-				_id:user_id
+				_id:user._id
 			}
 		}
 	}
