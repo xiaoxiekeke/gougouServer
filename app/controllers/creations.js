@@ -180,11 +180,11 @@ exports.save=function* (next){
 	var audioId=body.audioId
 	var title=body.title
 	
-	var video=yeild Video.findOne({
+	var video=yield Video.findOne({
 		_id:videoId
 	}).exec()
 
-	var audio=yeild Audio.findOne({
+	var audio=yield Audio.findOne({
 		_id:audioId
 	}).exec()
 
@@ -231,7 +231,7 @@ exports.save=function* (next){
 
 	};
 
-	creation=yeild creation.save()
+	creation=yield creation.save()
 	console.log(creation)
 	this.body={
 		success:true,
