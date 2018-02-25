@@ -41,12 +41,18 @@ function asyncMedia(videoId,audioId){
 		var thumbURL ='https://res.cloudinary.com/xiaoke/video/upload/'+video_public_id+'.jpg'
 
 		console.log('将生成的封面和视频同步到七牛')
+		console.log(videoURL)
+		console.log(videoName)
+		console.log(thumbURL)
+		console.log(thumbName)
 		robot
 				.saveToQiniu(videoURL,videoName)
 				.catch(function(err){
 				 	console.log(err)
 				 })
 				.then(function(response){
+					console.log('responseVideo')
+					console.log(response)
 				 	if(response&&response.key){
 				 		audio.qiniu_video=response.key
 				 		audio.save().then(function(_audio){
@@ -62,6 +68,8 @@ function asyncMedia(videoId,audioId){
 				 	console.log(err)
 				 })
 				.then(function(response){
+					console.log('responseVideo')
+					console.log(response)
 				 	if(response&&response.key){
 				 		audio.qiniu_thumb=response.key
 				 		audio.save().then(function(_audio){

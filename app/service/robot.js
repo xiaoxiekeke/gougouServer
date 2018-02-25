@@ -89,15 +89,40 @@ exports.uploadToCloudinary=function(url){
 
 //将cloudinary生成好的封面和视频同步到七牛
 exports.saveToQiniu=function(url,key){
-	var client=new qiniu.rs.Client()
+	var config = new qiniu.conf.Config();
+	config.zone = qiniu.zone.Zone_z0;
+	var bucketManager = new qiniu.rs.BucketManager(mac, config);
+	// var client=new qiniu.rs.Client()
 	return new Promise(function(resolve,reject){
-		client.fetch(url,'gougouvideo',key,function(err,ret){
-			if(err){
-				reject(err)
-			}else{
-				resolve(ret)
-			}
-		})
+		bucketManager.fetch(url,'gougouvideo', key, function(err, respBody, respInfo) {
+		  // if (err) {
+		  //   console.log(err);
+		  //   //throw err;
+		  // } else {
+		  //   if (respInfo.statusCode == 200) {
+		  //     console.log(respBody.hash);
+		  //     console.log(respBody.fsize);
+		  //     console.log(respBody.mimeType);
+		  //     console.log(respBody.putTime);
+		  //     console.log(respBody.type);
+		  //   } else {
+		  //     console.log(respInfo.statusCode);
+		  //     console.log(respBody.error);
+		  //   }
+		  // }
+		  if(err){
+		  	reject(err)
+		  }else{
+		  	resolve(ret)
+		  }
+		});
+		// client.fetch(url,'gougouvideo',key,function(err,ret){
+		// 	if(err){
+		// 		reject(err)
+		// 	}else{
+		// 		resolve(ret)
+		// 	}
+		// })
 	})
 }
 
