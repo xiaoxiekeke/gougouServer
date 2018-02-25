@@ -49,9 +49,21 @@ function asyncMedia(videoId,audioId){
 				 	console.log(err)
 				 })
 				.then(function(response){
+					console.log('同步视频')
 				 	if(response&&response.key){
 				 		audio.qiniu_video=response.key
 				 		audio.save().then(function(_audio){
+				 			audio.save().then(function(_audio){
+				 			Creation.findOne({
+				 				video:video._id,
+				 				audio:audio._id
+				 			}).exec()
+				 			.then(function(_creation){
+				 				if(_creation&&!_creation.qiniu_video){
+				 					_creation.qiniu_video=_audio.qiniu_video
+				 					_creation.save()
+				 				}
+				 			})
 				 			console.log(_audio)
 				 			console.log('同步视频成功')
 				 		})
@@ -67,6 +79,16 @@ function asyncMedia(videoId,audioId){
 				 	if(response&&response.key){
 				 		audio.qiniu_thumb=response.key
 				 		audio.save().then(function(_audio){
+				 			Creation.findOne({
+				 				video:video._id,
+				 				audio:audio._id
+				 			}).exec()
+				 			.then(function(_creation){
+				 				if(_creation&&!_creation.qiniu_video){
+				 					_creation.qiniu_thumb=_audio.qiniu_thumb
+				 					_creation.save()
+				 				}
+				 			})
 				 			console.log(_audio)
 				 			console.log('同步封面成功')
 				 		})
@@ -228,9 +250,7 @@ exports.save=function* (next){
 			creationData.qiniu_video=audio.qiniu_video
 			creationData.finish+=30
 		}
-
 		creation=new Creation(creationData)
-
 	};
 
 	creation=yield creation.save()
