@@ -94,7 +94,7 @@ exports.saveToQiniu=function(url,key){
 	var bucketManager = new qiniu.rs.BucketManager(mac, config);
 	// var client=new qiniu.rs.Client()
 	return new Promise(function(resolve,reject){
-		bucketManager.fetch(url,'gougouvideo', key, function(err, respBody, respInfo) {
+		bucketManager.fetch(url,'gougouvideo', key, function(err, ret) {
 		  // if (err) {
 		  //   console.log(err);
 		  //   //throw err;
