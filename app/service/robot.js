@@ -87,3 +87,26 @@ exports.uploadToCloudinary=function(url){
 	})
 }
 
+//将cloudinary生成好的封面和视频同步到七牛
+exports.saveToQiniu=function(url,key){
+	var client=new .qiniu.rs.Client()
+	return new Promise(function(resolve,reject){
+		client.fetch(url,'gougouvideo',key,function(err,ret){
+			if(err){
+				reject(err)
+			}else{
+				resolve(ret)
+			}
+		})
+	})
+}
+
+
+
+
+
+
+
+
+
+
