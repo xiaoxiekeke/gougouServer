@@ -80,6 +80,7 @@ function asyncMedia(videoId,audioId){
 				.then(function(response){
 					console.log('同步视频')
 				 	if(response&&response.key){
+				 		console.log(response)
 				 		audio.qiniu_video=response.key
 				 		audio.save().then(function(_audio){
 				 			Creation.findOne({
@@ -102,33 +103,33 @@ function asyncMedia(videoId,audioId){
 				 	}
 				})
 
-		robot
-				.saveToQiniu(thumbURL,thumbName)
-				.catch(function(err){
-				 	console.log(err)
-				 })
-				.then(function(response){
-				 	if(response&&response.key){
-				 		audio.qiniu_thumb=response.key
-				 		audio.save().then(function(_audio){
-				 			Creation.findOne({
-				 				video:video._id,
-				 				audio:audio._id
-				 			}).exec()
-				 			.then(function(_creation){
-				 				if(_creation){
-				 					if (!_creation.qiniu_video) {
-				 						_creation.qiniu_thumb=_audio.qiniu_thumb
-					 					_creation.save()	
-				 					};
+		// robot
+		// 		.saveToQiniu(thumbURL,thumbName)
+		// 		.catch(function(err){
+		// 		 	console.log(err)
+		// 		 })
+		// 		.then(function(response){
+		// 		 	if(response&&response.key){
+		// 		 		audio.qiniu_thumb=response.key
+		// 		 		audio.save().then(function(_audio){
+		// 		 			Creation.findOne({
+		// 		 				video:video._id,
+		// 		 				audio:audio._id
+		// 		 			}).exec()
+		// 		 			.then(function(_creation){
+		// 		 				if(_creation){
+		// 		 					if (!_creation.qiniu_video) {
+		// 		 						_creation.qiniu_thumb=_audio.qiniu_thumb
+		// 			 					_creation.save()	
+		// 		 					};
 				 					
-				 				}
-				 			})
-				 			console.log(_audio)
-				 			console.log('同步封面成功')
-				 		})
-				 	}
-				})
+		// 		 				}
+		// 		 			})
+		// 		 			console.log(_audio)
+		// 		 			console.log('同步封面成功')
+		// 		 		})
+		// 		 	}
+		// 		})
 		
 	})	
 	
@@ -172,7 +173,7 @@ exports.video=function* (next) {
 			 		video.public_id=data.public_id
 			 		video.detail=data
 			 		video.save().then(function(_video){
-			 			asyncMedia(_video.id)
+			 			// asyncMedia(_video.id)
 			 		})
 			 	}
 			 })
