@@ -53,7 +53,6 @@ function asyncMedia(videoId,audioId){
 				 	if(response&&response.key){
 				 		audio.qiniu_video=response.key
 				 		audio.save().then(function(_audio){
-				 			audio.save().then(function(_audio){
 				 			Creation.findOne({
 				 				video:video._id,
 				 				audio:audio._id
