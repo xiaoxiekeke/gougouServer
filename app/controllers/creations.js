@@ -72,12 +72,12 @@ function asyncMedia(videoId,audioId){
 
     console.log('开始同步音频视频')
 
-    var video_public_id = video.public_id
-    var audio_public_id = audio.public_id.replace(/\//g, ':')
-    var videoName = video_public_id.replace(/\//g, '_') + '.mp4'
-    var videoURL = 'http://res.cloudinary.com/gougou/video/upload/e_volume:-100/e_volume:400,l_video:' + audio_public_id + '/' + video_public_id + '.mp4'
-    var thumbName = video_public_id.replace(/\//g, '_') + '.jpg'
-    var thumbURL = 'http://res.cloudinary.com/gougou/video/upload/' + video_public_id + '.jpg'
+  	var video_public_id=video.public_id;
+  	var audio_public_id=audio.public_id.replace('/\//g',':');
+  	var videoName=video_public_id.replace('/\//g','_')+'.mp4'
+  	var videoURL='https://res.cloudinary.com/xiaoke/video/upload/'+'e_volume:-100/e_volume:400,l_video:'+audio_public_id+'/'+video_public_id+'.mp4'
+  	var thumbName=video_public_id.replace('/\//g','_')+'.jpg'
+  	var thumbURL ='https://res.cloudinary.com/xiaoke/video/upload/'+video_public_id+'.jpg'
 
     console.log('同步视频到七牛')
 		robot
@@ -98,7 +98,9 @@ function asyncMedia(videoId,audioId){
 				 				if(_creation){
 				 					if(!_creation.qiniu_video){
 				 						_creation.qiniu_video=_audio.qiniu_video
-					 					_creation.save()	
+					 					_creation.save().then(function(){
+					 						console.log('同步视频成功2')
+					 					})	
 				 					}
 				 				}
 				 			})
