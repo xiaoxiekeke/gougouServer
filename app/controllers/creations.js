@@ -152,7 +152,7 @@ function asyncMedia(videoId,audioId){
 		        })
 		      }
 		    })
-		})
+		
 	})	
 	
 
