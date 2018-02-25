@@ -13,62 +13,54 @@ var robot=require('../service/robot')
 // var uuid=require('uuid')
 
 function asyncMedia(videoId,audioId){
-	// if(!videoId) return
-	// console.log(videoId)
-	// console.log(audioId)
-	// var query={
-	// 	_id:audioId
-	// }
-	// if (!audioId) {
-	// 	query={
-	// 		video:videoId
-	// 	}
-	// };
-	// Promise.all([
-	// 	Video.findOne({_id:videoId}).exec(),
-	// 	Audio.findOne(query).exec()
-	// ]).then(function(data){
-	// 	var video=data[0]
-	// 	var audio=data[1]
-	// 	console.log('检查数据有效性')
-	// 	if (!video||!video.public_id||!audio||!audio.public_id) {
-	// 		return
-	// 	}
-	// 	console.log('开始同步音视频')
-	// 	var video_public_id=video.public_id;
-	// 	var audio_public_id=audio.public_id.replace('/\//g',':');
-	// 	var videoName=video_public_id.replace('/\//g','_')+'.mp4'
-	// 	var videoURL='https://res.cloudinary.com/xiaoke/video/upload/'+'e_volume:-100/e_volume:400,l_video:'+audio_public_id+'/'+video_public_id+'.mp4'
-	// 	var thumbName=video_public_id.replace('/\//g','_')+'.jpg'
-	// 	var thumbURL ='https://res.cloudinary.com/xiaoke/video/upload/'+video_public_id+'.jpg'
+	if(!videoId) return
+	console.log(videoId)
+	console.log(audioId)
+	var query={
+		_id:audioId
+	}
+	if (!audioId) {
+		query={
+			video:videoId
+		}
+	};
+	Promise.all([
+		Video.findOne({_id:videoId}).exec(),
+		Audio.findOne(query).exec()
+	]).then(function(data){
+		var video=data[0]
+		var audio=data[1]
+		console.log('检查数据有效性')
+		if (!video||!video.public_id||!audio||!audio.public_id) {
+			return
+		}
+	
+  // if (!videoId) return
 
-	// 	console.log('将生成的封面和视频同步到七牛')
-  if (!videoId) return
+  // console.log(videoId)
+  // console.log(audioId)
+  // var query = {
+  //   _id: audioId
+  // }
 
-  console.log(videoId)
-  console.log(audioId)
-  var query = {
-    _id: audioId
-  }
+  // if (!audioId) {
+  //   query = {
+  //     video: videoId
+  //   }
+  // }
 
-  if (!audioId) {
-    query = {
-      video: videoId
-    }
-  }
+  // Promise.all([
+  //   Video.findOne({_id: videoId}).exec(),
+  //   Audio.findOne(query).exec()
+  // ])
+  // .then(function(data) {
+  //   var video = data[0]
+  //   var audio = data[1]
 
-  Promise.all([
-    Video.findOne({_id: videoId}).exec(),
-    Audio.findOne(query).exec()
-  ])
-  .then(function(data) {
-    var video = data[0]
-    var audio = data[1]
-
-    console.log('检查数据有效性')
-    if (!video || !video.public_id || !audio || !audio.public_id) {
-      return
-    }
+  //   console.log('检查数据有效性')
+  //   if (!video || !video.public_id || !audio || !audio.public_id) {
+  //     return
+  //   }
 
     console.log('开始同步音频视频')
 
