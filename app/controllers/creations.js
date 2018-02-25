@@ -8,7 +8,7 @@ var xss=require('xss')
 // var sha1=require('sha1')
 var config=require('../../config/config')
 var robot=require('../service/robot')
-var user=this.session.user
+
 // var uuid=require('uuid')
 
 function asyncMedia(videoId,audioId){
@@ -178,6 +178,7 @@ exports.save=function* (next){
 	var body=this.request.body
 	var videoId=body.videoId
 	var audioId=body.audioId
+	var user=this.session.user
 	var title=body.title
 	
 	var video=yield Video.findOne({
