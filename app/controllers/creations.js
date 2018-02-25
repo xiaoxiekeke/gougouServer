@@ -12,90 +12,186 @@ var robot=require('../service/robot')
 
 // var uuid=require('uuid')
 
-function asyncMedia(videoId,audioId){
-	if(!videoId) return
-	console.log(videoId)
-	console.log(audioId)
-	var query={
-		_id:audioId
-	}
-	if (!audioId) {
-		query={
-			video:videoId
-		}
-	};
-	Promise.all([
-		Video.findOne({_id:videoId}).exec(),
-		Audio.findOne(query).exec()
-	]).then(function(data){
-		var video=data[0]
-		var audio=data[1]
-		console.log('检查数据有效性')
-		if (!video||!video.public_id||!audio||!audio.public_id) {
-			return
-		}
-		console.log('开始同步音视频')
-		var video_public_id=video.public_id;
-		var audio_public_id=audio.public_id.replace('/\//g',':');
-		var videoName=video_public_id.replace('/\//g','_')+'.mp4'
-		var videoURL='https://res.cloudinary.com/xiaoke/video/upload/'+'e_volume:-100/e_volume:400,l_video:'+audio_public_id+'/'+video_public_id+'.mp4'
-		var thumbName=video_public_id.replace('/\//g','_')+'.jpg'
-		var thumbURL ='https://res.cloudinary.com/xiaoke/video/upload/'+video_public_id+'.jpg'
+// function asyncMedia(videoId,audioId){
+// 	if(!videoId) return
+// 	console.log(videoId)
+// 	console.log(audioId)
+// 	var query={
+// 		_id:audioId
+// 	}
+// 	if (!audioId) {
+// 		query={
+// 			video:videoId
+// 		}
+// 	};
+// 	Promise.all([
+// 		Video.findOne({_id:videoId}).exec(),
+// 		Audio.findOne(query).exec()
+// 	]).then(function(data){
+// 		var video=data[0]
+// 		var audio=data[1]
+// 		console.log('检查数据有效性')
+// 		if (!video||!video.public_id||!audio||!audio.public_id) {
+// 			return
+// 		}
+// 		console.log('开始同步音视频')
+// 		var video_public_id=video.public_id;
+// 		var audio_public_id=audio.public_id.replace('/\//g',':');
+// 		var videoName=video_public_id.replace('/\//g','_')+'.mp4'
+// 		var videoURL='https://res.cloudinary.com/xiaoke/video/upload/'+'e_volume:-100/e_volume:400,l_video:'+audio_public_id+'/'+video_public_id+'.mp4'
+// 		var thumbName=video_public_id.replace('/\//g','_')+'.jpg'
+// 		var thumbURL ='https://res.cloudinary.com/xiaoke/video/upload/'+video_public_id+'.jpg'
 
-		console.log('将生成的封面和视频同步到七牛')
-		robot
-				.saveToQiniu(videoURL,videoName)
-				.catch(function(err){
-				 	console.log(err)
-				 })
-				.then(function(response){
-					console.log('同步视频')
-				 	if(response&&response.key){
-				 		audio.qiniu_video=response.key
-				 		audio.save().then(function(_audio){
-				 			Creation.findOne({
-				 				video:video._id,
-				 				audio:audio._id
-				 			}).exec()
-				 			.then(function(_creation){
-				 				if(_creation&&!_creation.qiniu_video){
-				 					_creation.qiniu_video=_audio.qiniu_video
-				 					_creation.save()
-				 				}
-				 			})
-				 			console.log(_audio)
-				 			console.log('同步视频成功')
-				 		})
-				 	}
-				})
+// 		console.log('将生成的封面和视频同步到七牛')
+// 		robot
+// 				.saveToQiniu(videoURL,videoName)
+// 				.catch(function(err){
+// 				 	console.log(err)
+// 				 })
+// 				.then(function(response){
+// 					console.log('同步视频')
+// 				 	if(response&&response.key){
+// 				 		audio.qiniu_video=response.key
+// 				 		audio.save().then(function(_audio){
+// 				 			Creation.findOne({
+// 				 				video:video._id,
+// 				 				audio:audio._id
+// 				 			}).exec()
+// 				 			.then(function(_creation){
+// 				 				if(_creation&&!_creation.qiniu_video){
+// 				 					_creation.qiniu_video=_audio.qiniu_video
+// 				 					_creation.save()
+// 				 				}
+// 				 			})
+// 				 			console.log(_audio)
+// 				 			console.log('同步视频成功')
+// 				 		})
+// 				 	}
+// 				})
 
-		robot
-				.saveToQiniu(thumbURL,thumbName)
-				.catch(function(err){
-				 	console.log(err)
-				 })
-				.then(function(response){
-				 	if(response&&response.key){
-				 		audio.qiniu_thumb=response.key
-				 		audio.save().then(function(_audio){
-				 			Creation.findOne({
-				 				video:video._id,
-				 				audio:audio._id
-				 			}).exec()
-				 			.then(function(_creation){
-				 				if(_creation&&!_creation.qiniu_video){
-				 					_creation.qiniu_thumb=_audio.qiniu_thumb
-				 					_creation.save()
-				 				}
-				 			})
-				 			console.log(_audio)
-				 			console.log('同步封面成功')
-				 		})
-				 	}
-				})
-	})	
+// 		robot
+// 				.saveToQiniu(thumbURL,thumbName)
+// 				.catch(function(err){
+// 				 	console.log(err)
+// 				 })
+// 				.then(function(response){
+// 				 	if(response&&response.key){
+// 				 		audio.qiniu_thumb=response.key
+// 				 		audio.save().then(function(_audio){
+// 				 			Creation.findOne({
+// 				 				video:video._id,
+// 				 				audio:audio._id
+// 				 			}).exec()
+// 				 			.then(function(_creation){
+// 				 				if(_creation&&!_creation.qiniu_video){
+// 				 					_creation.qiniu_thumb=_audio.qiniu_thumb
+// 				 					_creation.save()
+// 				 				}
+// 				 			})
+// 				 			console.log(_audio)
+// 				 			console.log('同步封面成功')
+// 				 		})
+// 				 	}
+// 				})
+// 	})	
 	
 
+// }
+
+function asyncMedia(videoId, audioId) {
+  if (!videoId) return
+
+  console.log(videoId)
+  console.log(audioId)
+  var query = {
+    _id: audioId
+  }
+
+  if (!audioId) {
+    query = {
+      video: videoId
+    }
+  }
+
+  Promise.all([
+    Video.findOne({_id: videoId}).exec(),
+    Audio.findOne(query).exec()
+  ])
+  .then(function(data) {
+    console.log(data)
+    var video = data[0]
+    var audio = data[1]
+
+    console.log('检查数据有效性')
+    if (!video || !video.public_id || !audio || !audio.public_id) {
+      return
+    }
+
+    console.log('开始同步音频视频')
+
+    var video_public_id = video.public_id
+    var audio_public_id = audio.public_id.replace(/\//g, ':')
+    var videoName = video_public_id.replace(/\//g, '_') + '.mp4'
+    var videoURL = 'http://res.cloudinary.com/gougou/video/upload/e_volume:-100/e_volume:400,l_video:' + audio_public_id + '/' + video_public_id + '.mp4'
+    var thumbName = video_public_id.replace(/\//g, '_') + '.jpg'
+    var thumbURL = 'http://res.cloudinary.com/gougou/video/upload/' + video_public_id + '.jpg'
+
+    console.log('同步视频到七牛')
+
+    robot
+      .saveToQiniu(videoURL, videoName)
+      .catch(function(err) {
+        console.log(err)
+      })
+      .then(function(response) {
+        if (response && response.key) {
+          audio.qiniu_video = response.key
+          audio.save().then(function(_audio) {
+            Creation.findOne({
+              video: video._id,
+              audio: audio._id
+            }).exec()
+            .then(function(_creation) {
+              if (_creation) {
+                if (!_creation.qiniu_video) {
+                  _creation.qiniu_video = _audio.qiniu_video
+                  _creation.save()
+                }
+              }
+            })
+            console.log(_audio)
+            console.log('同步视频成功')
+          })
+        }
+      })
+
+    robot
+      .saveToQiniu(thumbURL, thumbName)
+      .catch(function(err) {
+        console.log(err)
+      })
+      .then(function(response) {
+        if (response && response.key) {
+          audio.qiniu_thumb = response.key
+          audio.save().then(function(_audio) {
+            Creation.findOne({
+              video: video._id,
+              audio: audio._id
+            }).exec()
+            .then(function(_creation) {
+              if (_creation) {
+                if (!_creation.qiniu_video) {
+                  _creation.qiniu_thumb = _audio.qiniu_thumb
+                  _creation.save()
+                }
+              }
+            })
+            console.log(_audio)
+            console.log('同步封面成功')
+          })
+        }
+      })
+  })
 }
 
 exports.video=function* (next) {
@@ -133,7 +229,7 @@ exports.video=function* (next) {
 			 		video.public_id=data.public_id
 			 		video.detail=data
 			 		video.save().then(function(_video){
-			 			asyncMedia(_video.id)
+			 			// asyncMedia(_video.id)
 			 		})
 			 	}
 			 })
