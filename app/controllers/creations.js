@@ -4,9 +4,11 @@ var User=mongoose.model('User')
 var Video=mongoose.model('Video')
 var Audio=mongoose.model('Audio')
 var Promise=require('bluebird')
+var xss=require('xss')
 // var sha1=require('sha1')
 var config=require('../../config/config')
 var robot=require('../service/robot')
+var user=this.session.user
 // var uuid=require('uuid')
 
 function asyncMedia(videoId,audioId){
@@ -33,10 +35,10 @@ function asyncMedia(videoId,audioId){
 		}
 		console.log('开始同步音视频')
 		var video_public_id=video.public_id;
-		var audio_public_id=audio.public_id.replace('/',':');
-		var videoName=video_public_id.replace('/','_')+'.mp4'
+		var audio_public_id=audio.public_id.replace('/\//g',':');
+		var videoName=video_public_id.replace('/\//g','_')+'.mp4'
 		var videoURL='https://res.cloudinary.com/xiaoke/video/upload/'+'e_volume:-100/e_volume:400,l_video:'+audio_public_id+'/'+video_public_id+'.mp4'
-		var thumbName=video_public_id.replace('/','_')+'.jpg'
+		var thumbName=video_public_id.replace('/\//g','_')+'.jpg'
 		var thumbURL ='https://res.cloudinary.com/xiaoke/video/upload/'+video_public_id+'.jpg'
 
 		console.log('将生成的封面和视频同步到七牛')
@@ -172,16 +174,81 @@ exports.audio=function* (next) {
 
 }
 
-exports.save=function *(next){
+exports.save=function* (next){
 	var body=this.request.body
 	var videoId=body.videoId
 	var audioId=body.audioId
 	var title=body.title
-	console.log(videoId)
-	console.log(audioId)
-	console.log(title)
+	
+	var video=yeild Video.findOne({
+		_id:videoId
+	}).exec()
+
+	var audio=yeild Audio.findOne({
+		_id:audioId
+	}).exec()
+
+	if (!video||!audio) {
+		this.body={
+			success:false,
+			err:'音频或者视频素材不能为空'
+		}
+		return next
+	};
+
+	var creation = yield Creation.findOne({
+		audio:audioId,
+		video:videoId
+	}).exec()
+
+	if (!creation) {
+		var creationData={
+			author:user._id,
+			title:xss(title),
+			audio:audioId,
+			video:videoId,
+			finish:20
+		}
+
+		var video_public_id=video.public_id
+		var audio_public_id=audio.public_id
+		if (video_public_id&&audio_public_id) {
+			creationData.cloudinary_thumb='https://res.cloudinary.com/xiaoke/video/upload/'+video_public_id+'.jpg'
+			creationData.cloudinary_video='https://res.cloudinary.com/xiaoke/video/upload/'+'e_volume:-100/e_volume:400,l_video:'+audio_public_id.replace('/\//g',':')+'/'+video_public_id+'.mp4'
+			creationData.finish+=20
+		}
+
+		if (audio.qiniu_thumb) {
+			creationData.qiniu_thumb=audio.qiniu_thumb
+			creationData.finish+=30
+		}
+		if (audio.qiniu_video) {
+			creationData.qiniu_video=audio.qiniu_video
+			creationData.finish+=30
+		}
+
+		creation=new Creation(creationData)
+
+	};
+
+	creation=yeild creation.save()
+	console.log(creation)
 	this.body={
-		success:true
+		success:true,
+		data:{
+			_id:creation._id,
+			finish:creation.finish,
+			title:creation.title,
+			qiniu_thumb:creation.qiniu_thumb,
+			qiniu_video:creation.qiniu_video,
+			author:{
+				avatar:user.avatar,
+				nickname:user.nickname,
+				gender:user.gender,
+				breed:user.breed,
+				_id:user_id
+			}
+		}
 	}
 }
 
