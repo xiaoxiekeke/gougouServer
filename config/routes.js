@@ -14,5 +14,6 @@ module.exports=function(){
 
   router.post('/creations/video',App.hasBody,App.hasToken,Creation.video)
   router.post('/creations/audio',App.hasBody,App.hasToken,Creation.audio)
+  router.post('/creations',App.hasBody,App.hasToken,Creation.save)
   return router
 }

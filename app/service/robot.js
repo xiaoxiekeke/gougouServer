@@ -92,30 +92,17 @@ exports.saveToQiniu=function(url,key){
 	var config = new qiniu.conf.Config();
 	config.zone = qiniu.zone.Zone_z0;
 	var bucketManager = new qiniu.rs.BucketManager(mac, config);
-	// var client=new qiniu.rs.Client()
 	return new Promise(function(resolve,reject){
 		bucketManager.fetch(url,'gougouvideo', key, function(err, ret) {
-		  // if (err) {
-		  //   console.log(err);
-		  //   //throw err;
-		  // } else {
-		  //   if (respInfo.statusCode == 200) {
-		  //     console.log(respBody.hash);
-		  //     console.log(respBody.fsize);
-		  //     console.log(respBody.mimeType);
-		  //     console.log(respBody.putTime);
-		  //     console.log(respBody.type);
-		  //   } else {
-		  //     console.log(respInfo.statusCode);
-		  //     console.log(respBody.error);
-		  //   }
-		  // }
 		  if(err){
 		  	reject(err)
 		  }else{
 		  	resolve(ret)
 		  }
 		});
+
+		//第二种方式
+		// var client=new qiniu.rs.Client()
 		// client.fetch(url,'gougouvideo',key,function(err,ret){
 		// 	if(err){
 		// 		reject(err)
