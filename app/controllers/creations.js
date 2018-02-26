@@ -11,6 +11,53 @@ var config=require('../../config/config')
 var robot=require('../service/robot')
 
 // var uuid=require('uuid')
+var userFields=[
+'avatar',
+'nickname',
+'gender',
+'age',
+'breed'
+]
+
+exports.find=function *(next){
+	var page=parseInt(this.query.page,10)||1
+	var count=5
+	var offset=(page-1)*count
+
+	// var creations=yield Creation
+	// 		.find({finish:100})
+	// 		.sort({
+	// 			'mata.createAt':-1
+	// 		})
+	// 		.skip(offset)
+	// 		.limit(count)
+	// 		.populate('author','')
+	// 		.exec()
+
+	// var total=yield Creation.count({finish:100}).exec()
+
+	var queryArray=[
+		Creation
+			.find({finish:100})
+			.sort({
+				'mata.createAt':-1
+			})
+			.skip(offset)
+			.limit(count)
+			.populate('author',userFields.join(' '))
+			.exec(),
+		Creation.count({finish:100}).exec()
+	]
+
+	var data=yield queryArray
+
+	this.body={
+		success:true,
+		data:data[0],
+		total:data[1]
+	}
+
+}
 
 function asyncMedia(videoId,audioId){
 	if(!videoId) return
@@ -65,13 +112,14 @@ function asyncMedia(videoId,audioId){
     console.log('开始同步音频视频')
 
   	var video_public_id=video.public_id;
-  	var audio_public_id=audio.public_id.replace('/\//g',':');
-  	var videoName=video_public_id.replace('/\//g','_')+'.mp4'
+  	var audio_public_id=audio.public_id.replace('/',':');
+  	var videoName=video_public_id.replace('/','_')+'.mp4'
   	var videoURL='https://res.cloudinary.com/xiaoke/video/upload/'+'e_volume:-100/e_volume:400,l_video:'+audio_public_id+'/'+video_public_id+'.mp4'
-  	var thumbName=video_public_id.replace('/\//g','_')+'.jpg'
+  	var thumbName=video_public_id.replace('/','_')+'.jpg'
   	var thumbURL ='https://res.cloudinary.com/xiaoke/video/upload/'+video_public_id+'.jpg'
 
     console.log('同步视频到七牛')
+    console.log(videoURL)
 		robot
 				.saveToQiniu(videoURL,videoName)
 				.catch(function(err){
@@ -79,8 +127,9 @@ function asyncMedia(videoId,audioId){
 				 })
 				.then(function(response){
 					console.log('同步视频')
+					console.log(response)
 				 	if(response&&response.key){
-				 		console.log(response)
+				 		
 				 		audio.qiniu_video=response.key
 				 		audio.save().then(function(_audio){
 				 			Creation.findOne({
@@ -99,37 +148,39 @@ function asyncMedia(videoId,audioId){
 				 			})
 				 			console.log(_audio)
 				 			console.log('同步视频成功')
+				 		}).catch(function(err){
+				 			console.log(err)
 				 		})
 				 	}
 				})
 
-		// robot
-		// 		.saveToQiniu(thumbURL,thumbName)
-		// 		.catch(function(err){
-		// 		 	console.log(err)
-		// 		 })
-		// 		.then(function(response){
-		// 		 	if(response&&response.key){
-		// 		 		audio.qiniu_thumb=response.key
-		// 		 		audio.save().then(function(_audio){
-		// 		 			Creation.findOne({
-		// 		 				video:video._id,
-		// 		 				audio:audio._id
-		// 		 			}).exec()
-		// 		 			.then(function(_creation){
-		// 		 				if(_creation){
-		// 		 					if (!_creation.qiniu_video) {
-		// 		 						_creation.qiniu_thumb=_audio.qiniu_thumb
-		// 			 					_creation.save()	
-		// 		 					};
+		robot
+				.saveToQiniu(thumbURL,thumbName)
+				.catch(function(err){
+				 	console.log(err)
+				 })
+				.then(function(response){
+				 	if(response&&response.key){
+				 		audio.qiniu_thumb=response.key
+				 		audio.save().then(function(_audio){
+				 			Creation.findOne({
+				 				video:video._id,
+				 				audio:audio._id
+				 			}).exec()
+				 			.then(function(_creation){
+				 				if(_creation){
+				 					if (!_creation.qiniu_video) {
+				 						_creation.qiniu_thumb=_audio.qiniu_thumb
+					 					_creation.save()	
+				 					};
 				 					
-		// 		 				}
-		// 		 			})
-		// 		 			console.log(_audio)
-		// 		 			console.log('同步封面成功')
-		// 		 		})
-		// 		 	}
-		// 		})
+				 				}
+				 			})
+				 			console.log(_audio)
+				 			console.log('同步封面成功')
+				 		})
+				 	}
+				})
 		
 	})	
 	
@@ -277,7 +328,7 @@ exports.save=function* (next){
 		var audio_public_id=audio.public_id
 		if (video_public_id&&audio_public_id) {
 			creationData.cloudinary_thumb='https://res.cloudinary.com/xiaoke/video/upload/'+video_public_id+'.jpg'
-			creationData.cloudinary_video='https://res.cloudinary.com/xiaoke/video/upload/'+'e_volume:-100/e_volume:400,l_video:'+audio_public_id.replace('/\//g',':')+'/'+video_public_id+'.mp4'
+			creationData.cloudinary_video='https://res.cloudinary.com/xiaoke/video/upload/'+'e_volume:-100/e_volume:400,l_video:'+audio_public_id.replace('/',':')+'/'+video_public_id+'.mp4'
 			creationData.finish+=20
 		}
 
