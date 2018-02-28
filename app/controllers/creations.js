@@ -1,4 +1,5 @@
 'use strict'
+var _ = require('lodash')
 var mongoose=require('mongoose')
 var User=mongoose.model('User')
 var Video=mongoose.model('Video')
@@ -18,6 +19,38 @@ var userFields=[
 'age',
 'breed'
 ]
+
+exports.up=function *(next){
+	var body = this.request.body
+  var user = this.session.user
+  var creation = yield Creation.findOne({
+    _id: body.id
+  })
+  .exec()
+
+  if (!creation) {
+    this.body = {
+      success: false,
+      err: '视频找不到了！'
+    }
+    return next
+  }
+
+  if (body.up === 'yes') {
+    creation.votes.push(String(user._id))
+  }
+  else {
+    creation.votes = _.without(creation.votes, String(user._id))
+  }
+
+  creation.up = creation.votes.length
+
+  yield creation.save()
+
+  this.body = {
+    success: true
+  }
+}
 
 exports.find=function *(next){
 	var page=parseInt(this.query.page,10)||1
@@ -40,7 +73,7 @@ exports.find=function *(next){
 		Creation
 			.find({finish:100})
 			.sort({
-				'mata.createAt':-1
+				'meta.createAt':-1
 			})
 			.skip(offset)
 			.limit(count)

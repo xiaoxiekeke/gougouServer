@@ -3,6 +3,7 @@ var Router= require('koa-router')
 var User=require('../app/controllers/user')
 var App=require('../app/controllers/app')
 var Creation=require('../app/controllers/creations')
+var Comment=require('../app/controllers/comment')
 module.exports=function(){
   var router = new Router({
     prefix:'/api'
@@ -16,5 +17,8 @@ module.exports=function(){
   router.post('/creations/audio',App.hasBody,App.hasToken,Creation.audio)
   router.post('/creations',App.hasBody,App.hasToken,Creation.save)
   router.get('/creations',App.hasToken,Creation.find)
+  router.post('/comments',App.hasBody,App.hasToken,Comment.save)
+  router.get('/comments',App.hasToken,Comment.find)
+  router.post('/up',App.hasBody,App.hasToken,Creation.up)
   return router
 }
