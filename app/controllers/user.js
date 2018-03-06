@@ -102,6 +102,9 @@ exports.verify=function *(next) {
         nickname:user.nickname,
         accessToken:user.accessToken,
         avatar:user.avatar,
+        breed:user.breed,
+        gender:user.gender,
+        age:user.age,
         _id:user._id
       }
     }
