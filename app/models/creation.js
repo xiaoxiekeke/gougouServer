@@ -14,12 +14,11 @@ var CreationSchema = new Schema({
     type:ObjectId,
     ref:'Video'
   },
-
+  title:String,
   audio:{
     type:ObjectId,
     ref:'Audio'
   },
-
   qiniu_thumb:String,
   qiniu_video:String,
 
