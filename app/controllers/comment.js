@@ -23,11 +23,9 @@ exports.find=function *(next){
 		return next
 	};
 
-	
-
 	var queryArray=[
 		Comment.find({
-			creation:this.query.id
+			creation:id
 		})
 		.populate('replyBy',userFields.join(' '))
 		.sort({
